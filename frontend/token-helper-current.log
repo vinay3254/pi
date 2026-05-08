@@ -1,0 +1,6 @@
+
+> etherxmeet@1.0.0 server
+> node server/index.js
+
+◇ injected env (4) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+100ms token server running on http://localhost:4000

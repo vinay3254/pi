@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>EtherXMeet — Polygon Integration Documentation</title>
+<style>
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #1a1a1a; margin: 72pt; line-height: 1.5; }
+  h1 { font-size: 28pt; color: #1a1200; border-bottom: 3px solid #D4B571; padding-bottom: 8pt; margin-top: 0; }
+  h2 { font-size: 16pt; color: #2c1e00; border-bottom: 1px solid #D4B571; padding-bottom: 4pt; margin-top: 24pt; }
+  h3 { font-size: 13pt; color: #3d2b00; margin-top: 16pt; }
+  h4 { font-size: 11pt; color: #5c4200; margin-top: 12pt; }
+  p { margin: 6pt 0; }
+  code { font-family: Consolas, Courier New, monospace; font-size: 10pt; background: #f5f0e8; padding: 1pt 4pt; border-radius: 2pt; }
+  pre { font-family: Consolas, Courier New, monospace; font-size: 9.5pt; background: #f5f0e8; border-left: 3px solid #D4B571; padding: 10pt 14pt; margin: 10pt 0; white-space: pre-wrap; }
+  table { border-collapse: collapse; width: 100%; margin: 10pt 0; }
+  th { background: #D4B571; color: #fff; padding: 6pt 10pt; text-align: left; font-size: 10pt; }
+  td { border: 1px solid #ddd; padding: 5pt 10pt; font-size: 10pt; vertical-align: top; }
+  tr:nth-child(even) td { background: #faf7f0; }
+  ul, ol { margin: 6pt 0 6pt 20pt; }
+  li { margin: 3pt 0; }
+  .cover { text-align: center; padding: 60pt 0 40pt; border-bottom: 2px solid #D4B571; margin-bottom: 30pt; }
+  .cover h1 { border: none; font-size: 36pt; }
+  .cover .subtitle { font-size: 14pt; color: #6F5115; margin-top: 6pt; }
+  .cover .meta { font-size: 10pt; color: #888; margin-top: 20pt; }
+  .badge { display: inline-block; background: #D4B571; color: #fff; font-size: 9pt; padding: 2pt 8pt; border-radius: 10pt; font-weight: bold; }
+  .note { background: #fff8e6; border-left: 4px solid #D4B571; padding: 8pt 12pt; margin: 10pt 0; font-size: 10pt; }
+  .warn { background: #fff3cd; border-left: 4px solid #ff9800; padding: 8pt 12pt; margin: 10pt 0; font-size: 10pt; }
+  .toc a { color: #6F5115; text-decoration: none; }
+  .toc li { margin: 4pt 0; }
+  .page-break { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <h1>EtherXMeet</h1>
+  <div class="subtitle">Polygon Blockchain Integration — Technical Documentation</div>
+  <div class="meta">
+    Branch: <code>polygon-integration</code> &nbsp;|&nbsp;
+    Network: Polygon Amoy Testnet / Hardhat Local &nbsp;|&nbsp;
+    Date: April 2026
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<h2>Table of Contents</h2>
+<div class="toc">
+<ol>
+  <li><a href="#overview">Project Overview</a></li>
+  <li><a href="#architecture">System Architecture</a></li>
+  <li><a href="#contracts">Smart Contracts</a>
+    <ol>
+      <li>MeetingRegistry.sol</li>
+      <li>MeetingNFT.sol (ERC-721)</li>
+    </ol>
+  </li>
+  <li><a href="#deployment">Contract Deployment</a>
+    <ol>
+      <li>Local Hardhat Node</li>
+      <li>Polygon Amoy Testnet</li>
+    </ol>
+  </li>
+  <li><a href="#frontend">Frontend Web3 Integration</a>
+    <ol>
+      <li>WalletContext — MetaMask Connection</li>
+      <li>useMeetingContract Hook</li>
+      <li>useMeetingNFT Hook</li>
+      <li>ChainHUD Overlay</li>
+      <li>Meeting Receipt Modal</li>
+    </ol>
+  </li>
+  <li><a href="#ipfs">IPFS Receipt Storage (Pinata)</a></li>
+  <li><a href="#backend">Backend — LiveKit &amp; Recordings</a></li>
+  <li><a href="#flows">End-to-End Meeting Flows</a></li>
+  <li><a href="#env">Environment Variables</a></li>
+  <li><a href="#running">How to Run Locally</a></li>
+  <li><a href="#pending">Pending Work</a></li>
+</ol>
+</div>
+
+<!-- 1. OVERVIEW -->
+<div class="page-break"></div>
+<h2 id="overview">1. Project Overview</h2>
+
+<p>
+EtherXMeet is a decentralised Web3 video conferencing platform built on the Polygon blockchain. Every meeting event — creation, participant join, chat message, and meeting end — is recorded permanently on-chain as a tamper-proof audit trail. At the end of each meeting, the host receives an IPFS receipt and an ERC-721 NFT as a verifiable proof of the session.
+</p>
+
+<h3>Core Value Proposition</h3>
+<ul>
+  <li><strong>On-chain meeting records</strong> — every session is stored in <code>MeetingRegistry.sol</code> on Polygon</li>
+  <li><strong>IPFS receipts</strong> — meeting metadata pinned to IPFS via Pinata at end of session</li>
+  <li><strong>NFT receipts (ETXR)</strong> — ERC-721 token minted to the host wallet as proof of meeting</li>
+  <li><strong>LiveKit video rooms</strong> — real-time video via LiveKit cloud (wss://etherxmeet-9kvqnuhc.livekit.cloud)</li>
+  <li><strong>Screen recording</strong> — host can record the session, uploaded to backend storage</li>
+</ul>
+
+<h3>Tech Stack</h3>
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Version</th></tr>
+  <tr><td>Smart Contracts</td><td>Solidity + OpenZeppelin</td><td>^0.8.28 / v5.6.1</td></tr>
+  <tr><td>Contract Dev</td><td>Hardhat</td><td>^2.28.6</td></tr>
+  <tr><td>Blockchain</td><td>Polygon (Amoy testnet / mainnet)</td><td>—</td></tr>
+  <tr><td>Web3 Library</td><td>ethers.js</td><td>v6.16.0</td></tr>
+  <tr><td>Frontend</td><td>React 18 + Vite</td><td>React 18.3 / Vite 8</td></tr>
+  <tr><td>Animations</td><td>Framer Motion</td><td>v12</td></tr>
+  <tr><td>Video</td><td>Jitsi (8x8.vc) embed + LiveKit SDK</td><td>—</td></tr>
+  <tr><td>IPFS</td><td>Pinata</td><td>REST API</td></tr>
+  <tr><td>Backend</td><td>Node.js + Express + MongoDB</td><td>Express v5 / Mongoose v9</td></tr>
+  <tr><td>Auth</td><td>JWT + Google OAuth 2.0</td><td>—</td></tr>
+  <tr><td>Recording API</td><td>LiveKit Server SDK</td><td>v2.15.1</td></tr>
+</table>
+
+<!-- 2. ARCHITECTURE -->
+<div class="page-break"></div>
+<h2 id="architecture">2. System Architecture</h2>
+
+<pre>
+┌──────────────────────────────────────────────────────────────────┐
+│                        BROWSER (React App)                        │
+│                                                                    │
+│  Landing / Join ──► Room (Jitsi iframe + Web3 overlays)           │
+│       │                        │                                   │
+│  WalletContext           useMeetingContract                        │
+│  (MetaMask)              (ethers.js v6)                            │
+│       │                        │                                   │
+│       └──────── Signs txns ─────┘                                  │
+└───────────────────────┬──────────────────────────────────────────┘
+                        │  JSON-RPC (MetaMask)
+                        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                  POLYGON BLOCKCHAIN                                │
+│                                                                    │
+│   MeetingRegistry.sol          MeetingNFT.sol (ERC-721)           │
+│   ┌──────────────────┐         ┌──────────────────────┐           │
+│   │ createMeeting()  │         │ mint(meetingId, cid)  │           │
+│   │ joinMeeting()    │◄────────│ (host only, post-end) │           │
+│   │ sendMessage()    │         └──────────────────────┘           │
+│   │ endMeeting()     │                                             │
+│   └──────────────────┘                                             │
+└───────────────────────┬──────────────────────────────────────────┘
+                        │
+          ┌─────────────┴──────────────┐
+          ▼                            ▼
+┌─────────────────┐          ┌─────────────────────┐
+│  IPFS / Pinata  │          │  BACKEND (Node.js)   │
+│  Receipt JSON   │          │  :5000               │
+│  pinned on end  │          │                      │
+└─────────────────┘          │  /api/livekit/token  │
+                             │  /api/recordings     │
+                             │  /api/auth           │
+                             └──────────┬──────────┘
+                                        │
+                             ┌──────────▼──────────┐
+                             │  LiveKit Cloud       │
+                             │  wss://etherxmeet-   │
+                             │  9kvqnuhc.livekit.   │
+                             │  cloud               │
+                             └─────────────────────┘
+</pre>
+
+<!-- 3. SMART CONTRACTS -->
+<div class="page-break"></div>
+<h2 id="contracts">3. Smart Contracts</h2>
+
+<h3>3.1 MeetingRegistry.sol</h3>
+<p>
+Deployed at: <code>0x5FbDB2315678afecb367f032d93F642f64180aa3</code> (Hardhat local) <br>
+File: <code>contracts/MeetingRegistry.sol</code>
+</p>
+
+<p>This is the core contract. It stores every meeting's full lifecycle on-chain and is the single source of truth for all session data.</p>
+
+<h4>Data Structure</h4>
+<pre>
+struct Meeting {
+    string   meetingId;        // Unique room code e.g. "etherx-ua8ndzdk"
+    address  host;             // Wallet address of the meeting host
+    uint256  startTime;        // Unix timestamp — meeting started
+    uint256  endTime;          // Unix timestamp — meeting ended (0 = still live)
+    uint256  participantCount; // Number of wallets that joined
+    bytes32  notesHash;        // keccak256 hash of AI notes
+    string   metadataCID;      // IPFS CID for rich metadata JSON
+}
+</pre>
+
+<h4>Key Functions</h4>
+<table>
+  <tr><th>Function</th><th>Who Calls It</th><th>What It Does</th></tr>
+  <tr><td><code>createMeeting(meetingId)</code></td><td>Host wallet</td><td>Registers a new meeting on-chain, sets startTime, stores host address</td></tr>
+  <tr><td><code>joinMeeting(meetingId)</code></td><td>Participant wallet</td><td>Adds caller to participants list, increments participantCount</td></tr>
+  <tr><td><code>sendMessage(meetingId, contentHash)</code></td><td>Any participant</td><td>Records a keccak256 hash of a chat message on-chain</td></tr>
+  <tr><td><code>endMeeting(meetingId)</code></td><td>Host wallet only</td><td>Sets endTime, closes the meeting — reverts if called by non-host</td></tr>
+  <tr><td><code>getMeeting(meetingId)</code></td><td>Anyone (read-only)</td><td>Returns full Meeting struct</td></tr>
+  <tr><td><code>getMeetingsByHost(address)</code></td><td>Anyone (read-only)</td><td>Returns array of meeting IDs hosted by a given wallet</td></tr>
+  <tr><td><code>storeMeeting(...)</code></td><td>Legacy</td><td>Backward-compatible single atomic write (used before the multi-step flow)</td></tr>
+</table>
+
+<h4>Events Emitted</h4>
+<table>
+  <tr><th>Event</th><th>When</th><th>Parameters</th></tr>
+  <tr><td><code>MeetingCreated</code></td><td>createMeeting()</td><td>meetingId, host, startTime</td></tr>
+  <tr><td><code>ParticipantJoined</code></td><td>joinMeeting()</td><td>meetingId, participant, count</td></tr>
+  <tr><td><code>MessageSent</code></td><td>sendMessage()</td><td>meetingId, sender, contentHash</td></tr>
+  <tr><td><code>MeetingEnded</code></td><td>endMeeting()</td><td>meetingId, host, endTime, participantCount</td></tr>
+  <tr><td><code>MeetingStored</code></td><td>storeMeeting()</td><td>meetingId, host (legacy)</td></tr>
+</table>
+
+<h3>3.2 MeetingNFT.sol (ERC-721)</h3>
+<p>
+Deployed at: <code>0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512</code> (Hardhat local)<br>
+File: <code>contracts/MeetingNFT.sol</code><br>
+Token name: <strong>EtherXMeet Receipt</strong> &nbsp; Symbol: <strong>ETXR</strong>
+</p>
+
+<p>
+Mints one ERC-721 NFT per ended meeting. The token URI points to the IPFS receipt JSON (<code>ipfs://&lt;cid&gt;</code>).
+Only the original meeting host can mint, verified on-chain by calling back into <code>MeetingRegistry</code>.
+</p>
+
+<h4>Key Functions</h4>
+<table>
+  <tr><th>Function</th><th>Description</th></tr>
+  <tr><td><code>mint(meetingId, ipfsCid)</code></td><td>Mints one ETXR token. Verifies: meeting exists, meeting has ended, caller is host, not already minted. Sets tokenURI = <code>ipfs://&lt;cid&gt;</code>.</td></tr>
+  <tr><td><code>tokenURI(tokenId)</code></td><td>Returns the IPFS URI for a given token (ERC-721 standard)</td></tr>
+  <tr><td><code>minted(meetingId)</code></td><td>Returns true if an NFT has already been minted for that meeting</td></tr>
+  <tr><td><code>tokenOfMeeting(meetingId)</code></td><td>Returns the tokenId for a given meetingId</td></tr>
+</table>
+
+<h4>Mint Logic</h4>
+<pre>
+function mint(string calldata meetingId, string calldata ipfsCid)
+    external returns (uint256 tokenId)
+{
+    require(!minted[meetingId], "already minted");
+    IMeetingRegistry.Meeting memory m = IMeetingRegistry(registry).getMeeting(meetingId);
+    require(m.startTime != 0,   "meeting does not exist");
+    require(m.endTime   != 0,   "meeting not ended yet");
+    require(m.host == msg.sender, "only host can mint receipt");
+
+    tokenId = _nextTokenId++;
+    minted[meetingId] = true;
+    tokenOfMeeting[meetingId] = tokenId;
+    _safeMint(msg.sender, tokenId);
+    _setTokenURI(tokenId, string(abi.encodePacked("ipfs://", ipfsCid)));
+    emit ReceiptMinted(meetingId, msg.sender, tokenId, ipfsCid);
+}
+</pre>
+
+<h4>Hardhat Config</h4>
+<pre>
+// hardhat.config.js
+solidity: {
+  version: "0.8.28",
+  settings: {
+    optimizer: { enabled: true, runs: 200 },
+    evmVersion: "cancun"   // Required — OpenZeppelin v5 uses the mcopy opcode
+  }
+}
+</pre>
+<div class="note">⚠ OpenZeppelin v5.6.1 requires Solidity ≥ 0.8.24 and evmVersion "cancun". Older configs will fail with "mcopy instruction only available for Cancun-compatible VMs".</div>
+
+<!-- 4. DEPLOYMENT -->
+<div class="page-break"></div>
+<h2 id="deployment">4. Contract Deployment</h2>
+
+<h3>4.1 Local Hardhat Node</h3>
+<p>Run a local Ethereum node (chain ID 31337) for development:</p>
+<pre>
+# Terminal 1 — start the node
+cd EtherXMeet/.worktrees/polygon-integration
+npx hardhat node
+
+# Terminal 2 — deploy both contracts
+npm run deploy:local
+# Equivalent: npx hardhat run scripts/deploy.js --network localhost
+</pre>
+
+<p>The deploy script (<code>scripts/deploy.js</code>):</p>
+<ol>
+  <li>Deploys <code>MeetingRegistry</code></li>
+  <li>Deploys <code>MeetingNFT</code>, passing the registry address to its constructor</li>
+  <li>Saves ABI + address to <code>frontend/src/contracts/MeetingRegistry.json</code></li>
+  <li>Saves ABI + address to <code>frontend/src/contracts/MeetingNFT.json</code></li>
+</ol>
+
+<p>The frontend imports these JSON files directly — no manual address copy needed.</p>
+
+<h4>MetaMask Setup for Local Dev</h4>
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Network Name</td><td>Hardhat</td></tr>
+  <tr><td>RPC URL</td><td>http://127.0.0.1:8545</td></tr>
+  <tr><td>Chain ID</td><td>31337</td></tr>
+  <tr><td>Currency Symbol</td><td>ETH</td></tr>
+</table>
+
+<p>Import test account (pre-funded with 10,000 ETH):</p>
+<pre>Private Key: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+Address:     0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266</pre>
+
+<h3>4.2 Polygon Amoy Testnet</h3>
+<pre>
+npm run deploy:amoy
+# Equivalent: npx hardhat run scripts/deploy.js --network amoy
+
+# Verify on Polygonscan:
+npm run verify:amoy -- --constructor-args &lt;args&gt; &lt;CONTRACT_ADDRESS&gt;
+</pre>
+
+<div class="warn">
+  <strong>Prerequisite:</strong> The deployer wallet (<code>0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266</code>) must hold MATIC on Amoy testnet.<br>
+  Get free MATIC from: <strong>faucet.polygon.technology</strong> (24-hour cooldown between claims).<br>
+  Polygonscan API key required in <code>.env</code> for contract verification — get from polygonscan.com/myapikey.
+</div>
+
+<h4>Network Config in hardhat.config.js</h4>
+<pre>
+networks: {
+  localhost: { url: "http://127.0.0.1:8545" },
+  amoy: {
+    url: process.env.POLYGON_RPC_URL,      // https://rpc-amoy.polygon.technology
+    accounts: [process.env.PRIVATE_KEY],
+    chainId: 80002,
+  },
+  polygon: {
+    url: process.env.POLYGON_MAINNET_RPC_URL,
+    accounts: [process.env.PRIVATE_KEY],
+    chainId: 137,
+  }
+}
+</pre>
+
+<!-- 5. FRONTEND -->
+<div class="page-break"></div>
+<h2 id="frontend">5. Frontend Web3 Integration</h2>
+
+<h3>5.1 WalletContext — MetaMask Connection</h3>
+<p>File: <code>frontend/src/context/WalletContext.jsx</code></p>
+
+<p>Provides wallet state to the entire app via React Context:</p>
+<pre>
+const { account, balance, signer, isConnecting, connectError, connect } = useWallet();
+</pre>
+
+<table>
+  <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+  <tr><td><code>account</code></td><td>string | null</td><td>Connected wallet address (0x...)</td></tr>
+  <tr><td><code>balance</code></td><td>string | null</td><td>Native token balance (ETH/MATIC) formatted to 4 decimals</td></tr>
+  <tr><td><code>signer</code></td><td>ethers.Signer | null</td><td>ethers.js v6 signer for signing transactions</td></tr>
+  <tr><td><code>connect()</code></td><td>function</td><td>Opens MetaMask popup, switches to correct network, requests account access</td></tr>
+</table>
+
+<p>On connect, the context automatically requests a network switch to the correct chain based on <code>VITE_NETWORK</code>:</p>
+<pre>
+// VITE_NETWORK=localhost → chainId 0x7a69 (31337, Hardhat)
+// VITE_NETWORK=amoy     → chainId 0x13882 (80002, Polygon Amoy)
+// VITE_NETWORK=mainnet  → chainId 0x89 (137, Polygon)
+</pre>
+
+<p>Native currency is set correctly per network — MATIC for Polygon/Amoy, ETH for Hardhat.</p>
+
+<h3>5.2 useMeetingContract Hook</h3>
+<p>File: <code>frontend/src/hooks/useMeetingContract.js</code></p>
+
+<p>Wraps all <code>MeetingRegistry</code> contract calls with loading/error state:</p>
+<pre>
+const {
+  createMeeting, joinMeeting, sendMessage, endMeeting,
+  getMeeting, getMeetingsByHost,
+  isTxPending, txHash, error
+} = useMeetingContract();
+</pre>
+
+<p>Uses <code>ethers.Contract</code> with the signer from WalletContext. The contract ABI and address are imported from <code>frontend/src/contracts/MeetingRegistry.json</code> (written by the deploy script).</p>
+
+<h4>Transaction Flow</h4>
+<ol>
+  <li>User calls e.g. <code>createMeeting(roomCode)</code></li>
+  <li>MetaMask popup appears for the user to sign + approve gas</li>
+  <li><code>isTxPending = true</code> — ChainHUD shows a spinner</li>
+  <li>Hook waits for 1 confirmation (<code>tx.wait(1)</code>)</li>
+  <li>Returns the transaction receipt; <code>isTxPending = false</code></li>
+</ol>
+
+<h3>5.3 useMeetingNFT Hook</h3>
+<p>File: <code>frontend/src/hooks/useMeetingNFT.js</code></p>
+
+<pre>
+const { mintReceipt, isMinting, mintError } = useMeetingNFT();
+
+// Call after endMeeting + IPFS pin:
+const { tokenId, txHash } = await mintReceipt(meetingId, ipfsCid);
+</pre>
+
+<p>Wraps the <code>MeetingNFT.mint()</code> call. Returns the minted tokenId parsed from the <code>ReceiptMinted</code> event. Non-blocking — if minting fails (e.g. wallet disconnected), the receipt modal still opens without the NFT badge.</p>
+
+<h3>5.4 ChainHUD Overlay</h3>
+<p>File: <code>frontend/src/components/web3/ChainHUD.jsx</code></p>
+
+<p>A floating overlay shown inside the meeting room that displays:</p>
+<ul>
+  <li>Connected wallet address (truncated)</li>
+  <li>Current network label (HARDHAT / AMOY TESTNET / POLYGON)</li>
+  <li>Live block number (polls every 12 seconds)</li>
+  <li>A spinning indicator when a transaction is pending (<code>txPending</code> prop)</li>
+</ul>
+
+<h3>5.5 Meeting Receipt Modal</h3>
+<p>File: <code>frontend/src/components/web3/MeetingReceiptModal.jsx</code></p>
+
+<p>Shown to the host after <code>endMeeting</code> completes. Displays:</p>
+<ul>
+  <li>Transaction hash (links to block explorer)</li>
+  <li>Block number</li>
+  <li>Meeting duration in minutes</li>
+  <li>Participant count (from on-chain data)</li>
+  <li>IPFS CID (links to Pinata gateway)</li>
+  <li>NFT token ID badge ("ETXR #N") — shown only if minting succeeded</li>
+</ul>
+
+<h3>5.6 OnChainConfirmModal</h3>
+<p>File: <code>frontend/src/components/web3/OnChainConfirmModal.jsx</code></p>
+
+<p>Shown before navigating to the room. Explains to the user that creating/joining the meeting will trigger a blockchain transaction, then calls <code>createMeeting()</code> or <code>joinMeeting()</code> on approval.</p>
+
+<h3>5.7 WalletBanner</h3>
+<p>File: <code>frontend/src/components/web3/WalletBanner.jsx</code></p>
+
+<p>Shown at the top of the Dashboard and Landing page. Shows connected wallet address + balance when connected, or a "Connect MetaMask" button when not connected.</p>
+
+<!-- 6. IPFS -->
+<div class="page-break"></div>
+<h2 id="ipfs">6. IPFS Receipt Storage (Pinata)</h2>
+
+<p>File: <code>frontend/src/utils/ipfs.js</code></p>
+
+<p>After <code>endMeeting</code> returns a transaction receipt, the frontend pins a JSON receipt to IPFS via Pinata's REST API:</p>
+
+<pre>
+// Receipt JSON structure:
+{
+  "meetingId": "etherx-ua8ndzdk",
+  "txHash": "0xabc123...",
+  "blockNumber": 42,
+  "durationMin": 23,
+  "endedAt": 1714000000000
+}
+</pre>
+
+<p>The returned IPFS CID (<code>Qm...</code> or <code>bafy...</code>) is:</p>
+<ol>
+  <li>Displayed in the Meeting Receipt Modal with a gateway link</li>
+  <li>Stored in <code>metadataCID</code> on-chain (optional — for lookup later)</li>
+  <li>Passed to <code>MeetingNFT.mint()</code> as the token URI</li>
+</ol>
+
+<h4>Pinata Config</h4>
+<pre>
+VITE_PINATA_JWT=eyJ...      # JWT from app.pinata.cloud/keys
+VITE_PINATA_GATEWAY=https://gateway.pinata.cloud/ipfs
+</pre>
+
+<!-- 7. BACKEND -->
+<div class="page-break"></div>
+<h2 id="backend">7. Backend — LiveKit &amp; Recordings</h2>
+
+<p>File: <code>backend/src/</code> — Node.js + Express + MongoDB, running on port 5000.</p>
+
+<h3>API Routes</h3>
+<table>
+  <tr><th>Route</th><th>Auth</th><th>Description</th></tr>
+  <tr><td>POST /api/auth/register</td><td>None</td><td>Create account (email + password)</td></tr>
+  <tr><td>POST /api/auth/login</td><td>None</td><td>Login, returns JWT</td></tr>
+  <tr><td>GET /api/auth/google</td><td>None</td><td>Google OAuth 2.0 redirect</td></tr>
+  <tr><td>GET /api/auth/me</td><td>JWT</td><td>Returns current user profile</td></tr>
+  <tr><td>POST /api/livekit/token</td><td>None</td><td>Issues LiveKit JWT for a room + participant name</td></tr>
+  <tr><td>POST /api/recordings/upload</td><td>JWT</td><td>Uploads a .webm recording file (multipart)</td></tr>
+  <tr><td>GET /api/recordings</td><td>JWT</td><td>Lists all recordings for the logged-in user</td></tr>
+  <tr><td>GET /api/recordings/:id</td><td>JWT</td><td>Streams the recording file</td></tr>
+  <tr><td>DELETE /api/recordings/:id</td><td>JWT</td><td>Deletes a recording</td></tr>
+</table>
+
+<h3>LiveKit Token Generation</h3>
+<p>File: <code>backend/src/routes/livekit.js</code></p>
+
+<p>Uses <code>livekit-server-sdk</code> v2 to generate access tokens:</p>
+<pre>
+POST /api/livekit/token
+Body: { "roomName": "etherx-ua8ndzdk", "participantName": "0xf39F…2266" }
+Response: { "token": "eyJhbG..." }
+</pre>
+
+<p>The frontend uses this token with <code>@livekit/components-react</code>'s <code>LiveKitRoom</code> to connect to the LiveKit cloud server.</p>
+
+<h3>Recording Flow</h3>
+<ol>
+  <li>Host clicks <strong>Record</strong> in the meeting room</li>
+  <li>Browser asks permission to share a screen/tab (<code>getDisplayMedia</code>)</li>
+  <li><code>MediaRecorder</code> captures the stream in 1-second chunks</li>
+  <li>Host clicks <strong>Stop Rec</strong> (or stops screen share)</li>
+  <li>A <code>.webm</code> blob is assembled and POSTed to <code>/api/recordings/upload</code> with JWT auth</li>
+  <li>Backend stores file to <code>backend/uploads/</code> and creates a MongoDB record</li>
+  <li>Recording appears in <code>/recordings</code> page, playable via the stream endpoint</li>
+</ol>
+
+<h3>LiveKit Cloud Credentials</h3>
+<table>
+  <tr><th>Variable</th><th>Value</th></tr>
+  <tr><td>LIVEKIT_WS_URL</td><td>wss://etherxmeet-9kvqnuhc.livekit.cloud</td></tr>
+  <tr><td>LIVEKIT_API_KEY</td><td>API3dA3QHrfXzBT</td></tr>
+  <tr><td>LIVEKIT_API_SECRET</td><td>(in backend/.env)</td></tr>
+</table>
+
+<!-- 8. FLOWS -->
+<div class="page-break"></div>
+<h2 id="flows">8. End-to-End Meeting Flows</h2>
+
+<h3>8.1 Host Creates and Ends a Meeting</h3>
+<pre>
+1. Landing page → "New meeting" button
+   → generateRoomCode() → "etherx-xxxxxxxx"
+
+2. OnChainConfirmModal opens
+   → User approves → createMeeting(roomCode) called
+   → MetaMask popup → user signs tx
+   → MeetingRegistry.createMeeting() emits MeetingCreated event
+   → sessionStorage: etherx_host_room = roomCode
+
+3. Navigate to /room/etherx-xxxxxxxx
+   → Jitsi iframe loads (full-screen video)
+   → ChainHUD overlay shows wallet + block number
+   → "Record" + "End Meeting" buttons visible (host only)
+
+4. Host clicks "End Meeting"
+   → endMeeting(roomCode) → MetaMask sign
+   → MeetingRegistry.endMeeting() emits MeetingEnded
+
+5. Parallel: pinJSON(receipt) → Pinata IPFS → returns CID
+
+6. mintReceipt(roomCode, cid) → MeetingNFT.mint()
+   → MetaMask sign → ETXR #N minted to host wallet
+
+7. MeetingReceiptModal opens:
+   ┌─────────────────────────────────┐
+   │ tx: 0xabc...                    │
+   │ Block: 42                       │
+   │ Duration: 23 min                │
+   │ Participants: 3                 │
+   │ IPFS: Qm... [view]              │
+   │ NFT Receipt: ETXR #7            │
+   └─────────────────────────────────┘
+</pre>
+
+<h3>8.2 Participant Joins a Meeting</h3>
+<pre>
+1. Participant receives room URL: /room/etherx-xxxxxxxx
+   (without ?role=host in sessionStorage)
+
+2. If wallet connected → OnChainConfirmModal
+   → joinMeeting(roomCode) → MetaMask sign
+   → MeetingRegistry.joinMeeting() — participantCount++
+
+3. Navigate to /room/etherx-xxxxxxxx
+   → Jitsi iframe, no "End Meeting" button visible
+</pre>
+
+<h3>8.3 Chat Messages On-Chain</h3>
+<pre>
+1. User types in the room chat
+2. sendMessage(roomCode, keccak256(messageText)) called
+3. MetaMask signs the tx
+4. MessageSent event emitted on-chain
+5. Message content is NOT stored on-chain — only its hash
+   (content stays in the Jitsi session, hash is the on-chain proof)
+</pre>
+
+<!-- 9. ENV VARS -->
+<div class="page-break"></div>
+<h2 id="env">9. Environment Variables</h2>
+
+<h3>Root .env (contract deployment)</h3>
+<table>
+  <tr><th>Variable</th><th>Description</th></tr>
+  <tr><td>POLYGON_RPC_URL</td><td>Amoy testnet RPC (https://rpc-amoy.polygon.technology)</td></tr>
+  <tr><td>POLYGON_MAINNET_RPC_URL</td><td>Polygon mainnet RPC (https://polygon-rpc.com)</td></tr>
+  <tr><td>PRIVATE_KEY</td><td>Deployer wallet private key (keep secret!)</td></tr>
+  <tr><td>POLYGONSCAN_API_KEY</td><td>For contract verification on polygonscan.com</td></tr>
+  <tr><td>CONTRACT_ADDRESS</td><td>Auto-written by deploy script</td></tr>
+</table>
+
+<h3>frontend/.env</h3>
+<table>
+  <tr><th>Variable</th><th>Description</th></tr>
+  <tr><td>VITE_NETWORK</td><td>"localhost" | "amoy" | "mainnet" — controls chain switching</td></tr>
+  <tr><td>VITE_PINATA_JWT</td><td>Pinata JWT for IPFS pinning</td></tr>
+  <tr><td>VITE_PINATA_GATEWAY</td><td>https://gateway.pinata.cloud/ipfs</td></tr>
+  <tr><td>VITE_LIVEKIT_WS_URL</td><td>wss://etherxmeet-9kvqnuhc.livekit.cloud</td></tr>
+  <tr><td>VITE_API_BASE_URL</td><td>http://localhost:5000 (backend URL)</td></tr>
+</table>
+
+<h3>backend/.env</h3>
+<table>
+  <tr><th>Variable</th><th>Description</th></tr>
+  <tr><td>MONGO_URI</td><td>MongoDB connection string</td></tr>
+  <tr><td>JWT_SECRET</td><td>Secret for signing auth tokens</td></tr>
+  <tr><td>GOOGLE_CLIENT_ID / SECRET</td><td>Google OAuth credentials</td></tr>
+  <tr><td>LIVEKIT_API_KEY</td><td>LiveKit cloud API key</td></tr>
+  <tr><td>LIVEKIT_API_SECRET</td><td>LiveKit cloud API secret</td></tr>
+  <tr><td>LIVEKIT_WS_URL</td><td>wss://etherxmeet-9kvqnuhc.livekit.cloud</td></tr>
+  <tr><td>CLIENT_URL</td><td>http://localhost:3000 (CORS origin)</td></tr>
+</table>
+
+<!-- 10. RUNNING -->
+<div class="page-break"></div>
+<h2 id="running">10. How to Run Locally</h2>
+
+<pre>
+# Terminal 1 — Hardhat node
+cd EtherXMeet/.worktrees/polygon-integration
+npx hardhat node
+
+# Terminal 2 — Deploy contracts
+npm run deploy:local
+
+# Terminal 3 — Frontend
+cd frontend
+npm run dev
+# → http://localhost:3000
+
+# Terminal 4 — Backend
+cd backend
+npm run dev
+# → http://localhost:5000
+
+# (Optional) Terminal 5 — MongoDB
+mongod
+</pre>
+
+<h3>npm Scripts (root package.json)</h3>
+<table>
+  <tr><th>Script</th><th>Description</th></tr>
+  <tr><td>npm run compile</td><td>Compile smart contracts with Hardhat</td></tr>
+  <tr><td>npm run test:contracts</td><td>Run Hardhat test suite (30 tests)</td></tr>
+  <tr><td>npm run deploy:local</td><td>Deploy to local Hardhat node</td></tr>
+  <tr><td>npm run deploy:amoy</td><td>Deploy to Polygon Amoy testnet</td></tr>
+  <tr><td>npm run deploy:polygon</td><td>Deploy to Polygon mainnet</td></tr>
+  <tr><td>npm run verify:amoy</td><td>Verify contract on Amoy Polygonscan</td></tr>
+</table>
+
+<!-- 11. PENDING -->
+<div class="page-break"></div>
+<h2 id="pending">11. Pending Work</h2>
+
+<table>
+  <tr><th>Item</th><th>Status</th><th>Notes</th></tr>
+  <tr>
+    <td>Polygon Amoy Testnet Deployment</td>
+    <td>🟡 Blocked</td>
+    <td>Deployer wallet (0xf39F…2266) needs MATIC. Claim from faucet.polygon.technology (24h cooldown). Run <code>npm run deploy:amoy</code> after funding.</td>
+  </tr>
+  <tr>
+    <td>LiveKit Cloud Egress Recording</td>
+    <td>🟡 Partial</td>
+    <td>Token endpoint working. Browser-based screen capture recording implemented. Cloud egress (server-side composite) would require S3 bucket configuration in LiveKit dashboard.</td>
+  </tr>
+  <tr>
+    <td>Contract Verification on Polygonscan</td>
+    <td>⬜ Not started</td>
+    <td>Run <code>npm run verify:amoy</code> after Amoy deployment. API key already in .env.</td>
+  </tr>
+  <tr>
+    <td>ENS Name Resolution</td>
+    <td>⬜ Hook exists</td>
+    <td><code>useEnsName.js</code> hook is written. Not wired into UI — wallet addresses still show as raw hex.</td>
+  </tr>
+  <tr>
+    <td>Polygon Mainnet Deployment</td>
+    <td>⬜ Config ready</td>
+    <td>Network config in hardhat.config.js is ready. Run <code>npm run deploy:polygon</code> with a funded mainnet wallet.</td>
+  </tr>
+</table>
+
+<h3>Known Issues</h3>
+<ul>
+  <li>If the Hardhat node is restarted, contracts must be re-deployed and MetaMask's nonce may need to be reset (Settings → Advanced → Clear activity tab data)</li>
+  <li>Recording upload requires the user to be logged in via the backend — anonymous users' recordings are silently discarded</li>
+  <li>The Jitsi (8x8.vc) iframe is a third-party embed. The video quality and features depend on Jitsi's free tier</li>
+</ul>
+
+<hr>
+<p style="text-align:center; color:#888; font-size:9pt; margin-top:30pt;">
+  EtherXMeet — Polygon Integration Documentation &nbsp;|&nbsp; Generated April 2026 &nbsp;|&nbsp; Branch: polygon-integration
+</p>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IMeetingRegistry",
+  "sourceName": "contracts/MeetingNFT.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "meetingId",
+          "type": "string"
+        }
+      ],
+      "name": "getMeeting",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "meetingId",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "host",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "startTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "endTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "participantCount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "notesHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "string",
+              "name": "metadataCID",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct IMeetingRegistry.Meeting",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

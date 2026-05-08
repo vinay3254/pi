@@ -1,0 +1,106 @@
+[2m10:02:04 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[2m10:02:04 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[2m10:03:05 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mHMS-Store: possible inconsistency detected -  room leave is called when no room is connected
+[2m10:09:43 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[2m10:09:43 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[2m10:09:52 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mHMS-Store: possible inconsistency detected -  room leave is called when no room is connected
+[2m10:09:59 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[2m10:09:59 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[2m10:10:05 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mHMS-Store: possible inconsistency detected -  room leave is called when no room is connected
+[2m10:10:06 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[2m10:10:06 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[2m10:10:14 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mHMS-Store: possible inconsistency detected -  room leave is called when no room is connected
+[2m10:11:53 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[2m10:11:53 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[2m10:13:00 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled error] [1mReferenceError[22m: Input is not defined
+[39m > Join src/pages/Join.jsx:172:17
+    170 |  
+    171 |                <motion.div variants={staggerChild} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    172 |                  <Input
+        |                   ^
+    173 |                    label="Your Name"
+    174 |                    type="text"
+ > renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:17
+ > updateFunctionComponent node_modules/react-dom/cjs/react-dom.development.js:19617:19
+ > beginWork node_modules/react-dom/cjs/react-dom.development.js:21640:15
+ > HTMLUnknownElement.callCallback node_modules/react-dom/cjs/react-dom.development.js:4164:13
+ > Object.invokeGuardedCallbackDev node_modules/react-dom/cjs/react-dom.development.js:4213:15
+ > invokeGuardedCallback node_modules/react-dom/cjs/react-dom.development.js:4277:30
+ > beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27490:6
+ > performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26596:11
+ > workLoopSync node_modules/react-dom/cjs/react-dom.development.js:26505:4
+
+[2m10:13:01 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled error] [1mReferenceError[22m: Input is not defined
+[39m > Join src/pages/Join.jsx:172:17
+    170 |  
+    171 |                <motion.div variants={staggerChild} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    172 |                  <Input
+        |                   ^
+    173 |                    label="Your Name"
+    174 |                    type="text"
+ > renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:17
+ > updateFunctionComponent node_modules/react-dom/cjs/react-dom.development.js:19617:19
+ > beginWork node_modules/react-dom/cjs/react-dom.development.js:21640:15
+ > HTMLUnknownElement.callCallback node_modules/react-dom/cjs/react-dom.development.js:4164:13
+ > Object.invokeGuardedCallbackDev node_modules/react-dom/cjs/react-dom.development.js:4213:15
+ > invokeGuardedCallback node_modules/react-dom/cjs/react-dom.development.js:4277:30
+ > beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27490:6
+ > performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26596:11
+ > workLoopSync node_modules/react-dom/cjs/react-dom.development.js:26505:4
+
+[2m10:13:01 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mThe above error occurred in the <Join> component:
+
+    at Join (http://localhost:3000/src/pages/Join.jsx?t=1778085780584:40:19)
+    at RenderedRoute (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=4c4f5cc8:3332:8)
+    at Outlet (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=4c4f5cc8:3703:25)
+    at ProtectedRoute (http://localhost:3000/src/components/auth/ProtectedRoute.jsx:9:19)
+    at RenderedRoute (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=4c4f5cc8:3332:8)
+    at Routes (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=4c4f5cc8:3775:8)
+    at PopChildMeasure (http://localhost:3000/node_modules/.vite/deps/framer-motion.js?v=4c4f5cc8:8618:23)
+    at PopChild (http://localhost:3000/node_modules/.vite/deps/framer-motion.js?v=4c4f5cc8:8644:21)
+    at PresenceChild (http://localhost:3000/node_modules/.vite/deps/framer-motion.js?v=4c4f5cc8:8700:24)
+    at AnimatePresence (http://localhost:3000/node_modules/.vite/deps/framer-motion.js?v=4c4f5cc8:8869:26)
+    at AppRoutes (http://localhost:3000/src/App.jsx?t=1778085459008:31:19)
+    at MeetingProvider (http://localhost:3000/src/context/MeetingContext.jsx:51:35)
+    at UIProvider (http://localhost:3000/src/context/UIContext.jsx:13:30)
+    at UserProvider (http://localhost:3000/src/context/UserContext.jsx:49:32)
+    at AnimationProvider (http://localhost:3000/src/context/AnimationContext.jsx:16:37)
+    at WalletProvider (http://localhost:3000/src/context/WalletContext.jsx:9:34)
+    at Router (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=4c4f5cc8:3723:18)
+    at BrowserRouter (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=4c4f5cc8:4402:8)
+    at App
+    at l (http://localhost:3000/node_modules/.vite/deps/@100mslive_react-sdk.js?v=4c4f5cc8:19890:67)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+[2m10:13:01 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled rejection] [1mReferenceError[22m: Input is not defined
+[39m > Join src/pages/Join.jsx:172:17
+    170 |  
+    171 |                <motion.div variants={staggerChild} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    172 |                  <Input
+        |                   ^
+    173 |                    label="Your Name"
+    174 |                    type="text"
+ > renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:17
+ > updateFunctionComponent node_modules/react-dom/cjs/react-dom.development.js:19617:19
+ > beginWork node_modules/react-dom/cjs/react-dom.development.js:21640:15
+ > beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:13
+ > performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26596:11
+ > workLoopSync node_modules/react-dom/cjs/react-dom.development.js:26505:4
+ > renderRootSync node_modules/react-dom/cjs/react-dom.development.js:26473:6
+ > recoverFromConcurrentError node_modules/react-dom/cjs/react-dom.development.js:25889:19
+ > performSyncWorkOnRoot node_modules/react-dom/cjs/react-dom.development.js:26135:19
+
+[2m10:18:36 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mHMS-Store: possible inconsistency detected -  room leave is called when no room is connected
+[2m10:18:36 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[2m10:18:36 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[2m10:19:44 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mError setting localStorage key "nexmeet_saved_recordings": TypeError: Converting circular structure to JSON
+    --> starting at object with constructor 'HTMLButtonElement'
+    |     property '__reactFiber$k9cf5kp3k8r' -> object with constructor 'FiberNode'
+    --- property 'stateNode' closes the circle
+    at JSON.stringify (<anonymous>)
+    at http://localhost:3000/src/hooks/useLocalStorage.js:45:43
+    at mr.onstop (http://localhost:3000/src/context/MeetingContext.jsx:262:5)
+[2m10:20:42 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mHMS-Store: possible inconsistency detected -  room leave is called when no room is connected
+[2m10:20:42 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[2m10:20:42 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
